@@ -9,7 +9,8 @@ jobs:
     steps:
       - name: Clone source repository
         run: |
-          git clone --depth 1 https://github.com/aw168/awbk.git
+          git clone https://github.com/aw168/awbk.git
+          ls awbk/usr/themes/Joe # 确认 Joe 文件夹是否存在
           cp -r awbk/usr/themes/Joe ./Joe
 
       - name: Checkout destination repository

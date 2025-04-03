@@ -1,14 +1,31 @@
-name: Unzip and Move Files
-on: [push]
+name: Move Joe Folder
+
+on:
+  workflow_dispatch:
 
 jobs:
-  unzip:
+  move-folder:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Unzip file
+      - name: Clone source repository
         run: |
-          unzip Joe.zip -d usr/themes
-        shell: bash
+          git clone --depth 1 https://github.com/aw168/awbk.git
+          cp -r awbk/usr/themes/Joe ./Joe
+
+      - name: Checkout destination repository
+        uses: actions/checkout@v3
+        with:
+          repository: aw168/typecho123
+          ref: master
+
+      - name: Move Joe folder to destination
+        run: |
+          mv ./Joe usr/themes
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "Your GitHub Username"
+          git config --global user.email "YourEmail@example.com"
+          git add usr/themes/Joe
+          git commit -m "Moved Joe folder from awbk to typecho123"
+          git push

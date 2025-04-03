@@ -10,8 +10,12 @@ jobs:
       - name: Clone source repository
         run: |
           git clone https://github.com/aw168/awbk.git
-          ls awbk/usr/themes/Joe # 确认 Joe 文件夹是否存在
+          ls -R awbk/usr/themes
+
+      - name: Copy Joe folder
+        run: |
           cp -r awbk/usr/themes/Joe ./Joe
+          ls -R ./Joe
 
       - name: Checkout destination repository
         uses: actions/checkout@v3
@@ -21,7 +25,9 @@ jobs:
 
       - name: Move Joe folder to destination
         run: |
+          mkdir -p usr/themes
           mv ./Joe usr/themes
+          ls -R usr/themes
 
       - name: Commit and push changes
         run: |

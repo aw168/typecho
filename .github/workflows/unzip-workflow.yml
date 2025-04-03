@@ -10,9 +10,12 @@ jobs:
       - name: Clone source repository
         run: |
           git clone https://github.com/aw168/awbk.git
-          ls -R awbk/usr/themes # 检查文件夹内容
+          ls -R awbk/usr/themes # 调试，确认文件夹内容
+
+      - name: Copy Joe folder
+        run: |
           cp -r awbk/usr/themes/Joe ./Joe
-          ls -R ./Joe # 再次确认 Joe 文件夹是否已复制
+          ls -R ./Joe # 调试，确认文件是否已复制
 
       - name: Checkout destination repository
         uses: actions/checkout@v3

@@ -19,11 +19,14 @@ if (!defined('__TYPECHO_ROOT_DIR__')) {
                 <?php
                 $this->widget('Widget_Contents_Page_List')->to($pages);
                 $this->options->JNavMaxNum = isset($this->options->JNavMaxNum) ? $this->options->JNavMaxNum : 3;
+                // 检查 $pages->stack 是否为空
+                if (empty($pages->stack) || !is_array($pages->stack)) {
+                    $pages->stack = [];
+                }
                 ?>
                 <?php if (count($pages->stack) <= $this->options->JNavMaxNum) : ?>
                     <?php foreach ($pages->stack as $item) : ?>
                         <?php
-                        // 检查 $item 数组的键是否存在，避免未定义索引错误
                         $title = isset($item['title']) ? htmlspecialchars($item['title']) : '未定义标题';
                         $permalink = isset($item['permalink']) ? $item['permalink'] : '#';
                         $slug = isset($item['slug']) ? $item['slug'] : '';
@@ -82,14 +85,18 @@ if (!defined('__TYPECHO_ROOT_DIR__')) {
                 <nav class="result">
                     <?php $this->widget('Widget_Contents_Hot@Search', 'pageSize=5')->to($item); ?>
                     <?php $index = 1; ?>
-                    <?php while ($item->next()) : ?>
-                        <a href="<?php $item->permalink(); ?>" title="<?php $item->title(); ?>" class="item">
-                            <span class="sort"><?php echo $index; ?></span>
-                            <span class="text"><?php $item->title(); ?></span>
-                            <span class="views"><?php echo number_format($item->views); ?> 阅读</span>
-                        </a>
-                        <?php $index++; ?>
-                    <?php endwhile; ?>
+                    <?php if ($item->have()) : ?>
+                        <?php while ($item->next()) : ?>
+                            <a href="<?php $item->permalink(); ?>" title="<?php $item->title(); ?>" class="item">
+                                <span class="sort"><?php echo $index; ?></span>
+                                <span class="text"><?php $item->title(); ?></span>
+                                <span class="views"><?php echo number_format($item->views); ?> 阅读</span>
+                            </a>
+                            <?php $index++; ?>
+                        <?php endwhile; ?>
+                    <?php else : ?>
+                        <span class="text">暂无热门文章</span>
+                    <?php endif; ?>
                 </nav>
             </form>
             <?php

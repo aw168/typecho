@@ -1,0 +1,40 @@
+name: Move Joe Theme
+
+on:
+  workflow_dispatch: # 手动触发工作流
+  # 你也可以选择其他触发方式，例如 push 到 awbk 仓库时触发
+
+jobs:
+  move-joe:
+    runs-on: ubuntu-latest
+    steps:
+      # 检出目标仓库 (typecho123)
+      - name: Checkout typecho123
+        uses: actions/checkout@v4
+        with:
+          repository: aw168/typecho123
+          token: ${{ secrets.PAT }} # 使用 Personal Access Token
+
+      # 检出源仓库 (awbk) 的 Joe 文件夹
+      - name: Checkout awbk Joe folder
+        uses: actions/checkout@v4
+        with:
+          repository: aw168/awbk
+          path: temp-awbk # 临时目录
+          token: ${{ secrets.PAT }}
+
+      # 移动 Joe 文件夹到 typecho123 的 usr/themes
+      - name: Move Joe folder
+        run: |
+          mkdir -p usr/themes
+          cp -r temp-awbk/usr/themes/Joe usr/themes/
+          rm -rf temp-awbk # 清理临时目录
+
+      # 提交更改到 typecho123
+      - name: Commit and push changes
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add usr/themes/Joe
+          git commit -m "自动移动 Joe 主题从 awbk 仓库" || echo "没有新更改"
+          git push origin master # 替换为你的默认分支，例如 main

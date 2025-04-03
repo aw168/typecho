@@ -2,7 +2,6 @@ name: Move Joe Theme
 
 on:
   workflow_dispatch: # 手动触发工作流
-  # 你也可以选择其他触发方式，例如 push 到 awbk 仓库时触发
 
 jobs:
   move-joe:
@@ -13,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: aw168/typecho123
-          token: ${{ secrets.PAT }} # 使用 Personal Access Token
+          token: ${{ secrets.PAT }} # 确保这里引用正确
 
       # 检出源仓库 (awbk) 的 Joe 文件夹
       - name: Checkout awbk Joe folder
@@ -21,7 +20,7 @@ jobs:
         with:
           repository: aw168/awbk
           path: temp-awbk # 临时目录
-          token: ${{ secrets.PAT }}
+          token: ${{ secrets.PAT }} # 确保这里也引用正确
 
       # 移动 Joe 文件夹到 typecho123 的 usr/themes
       - name: Move Joe folder

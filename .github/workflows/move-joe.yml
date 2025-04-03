@@ -22,11 +22,11 @@ jobs:
           path: temp-Joe
           token: ${{ secrets.PAT }}
 
-      # 移动 Joe 文件夹到 typecho123 的 usr/themes
+      # 移动 Joe 文件夹到 typecho123 的 usr/themes/Joe
       - name: Move Joe folder
         run: |
-          mkdir -p usr/themes
-          cp -r temp-Joe usr/themes/
+          mkdir -p usr/themes/Joe
+          cp -r temp-Joe usr/themes/Joe/
           rm -rf temp-Joe
 
       # 提交更改到 typecho123
@@ -34,6 +34,6 @@ jobs:
         run: |
           git config user.name "GitHub Action"
           git config user.email "action@github.com"
-          git add -f usr/themes/Joe  # 强制添加
+          git add -f usr/themes/Joe/Joe  # 强制添加
           git commit -m "自动移动 Joe 主题从 Joe 仓库" || echo "没有新更改"
           git push origin master  # 确保分支名正确

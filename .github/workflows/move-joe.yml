@@ -36,4 +36,4 @@ jobs:
           git config user.email "action@github.com"
           git add -f usr/themes/Joe  # 强制添加
           git commit -m "自动移动 Joe 主题从 awbk 仓库" || echo "没有新更改"
-          git push origin main  # 确保分支名正确
+          git push origin master  # 确保分支名正确

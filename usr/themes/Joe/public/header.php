@@ -4,8 +4,8 @@
       <svg class="joe_header__above-slideicon" viewBox="0 0 1152 1024" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
         <path d="M76.032 872a59.968 59.968 0 1 0 0 120h999.936a59.968 59.968 0 1 0 0-120H76.032zm16-420.032a59.968 59.968 0 1 0 0 120h599.936a59.968 59.968 0 1 0 0-119.936H92.032zM76.032 32a59.968 59.968 0 1 0 0 120h999.936a60.032 60.032 0 0 0 0-120H76.032z" />
       </svg>
-      <a title="<?php $this->options->title(); ?>" class="joe_header__above-logo" href="<?php $this->options->siteUrl(); ?>">
-        <img class="lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?php $this->options->JLogo() ?>" alt="<?php $this->options->title(); ?>" />
+      <a title="<?php echo $this->options->title() ? $this->options->title() : '默认标题'; ?>" class="joe_header__above-logo" href="<?php $this->options->siteUrl(); ?>">
+        <img class="lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?php $this->options->JLogo() ?>" alt="<?php echo $this->options->title() ? $this->options->title() : '默认标题'; ?>" />
         <svg class="profile-color-modes" height="45" viewBox="0 0 106 60" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
           <g class="profile-color-modes-illu-group profile-color-modes-illu-red">
             <path d="M37.5 58.5V57.5C37.5 49.768 43.768 43.5 51.5 43.5V43.5C59.232 43.5 65.5 49.768 65.5 57.5V58.5"></path>
@@ -57,7 +57,7 @@
               <path d="M67.3374 27.8242V30.4998"></path>
             </g>
             <g class="profile-color-modes-illu-frame">
-              <path d="M45.3697 34.2658C41.8877 32.1376 39.7113 28.6222 39.7113 23.2283C39.7113 20.3101 40.3483 17.7986 41.4845 15.6968C40.3605 11.9182 39.662 6.85125 40.7522 5.23168C42.5699 2.53117 49.3177 4.6027 52.1188 8.24095C53.831 7.85521 55.6556 7.66186 57.5491 7.66186C59.3929 7.66186 61.1713 7.84519 62.8442 8.21095C65.6593 4.59134 72.375 2.5386 74.1877 5.23168C75.2599 6.82461 74.6019 11.7525 73.5105 15.5094C74.7112 17.6488 75.3869 20.2229 75.3869 23.2283C75.3869 28.6222 73.2105 32.1376 69.7285 34.2658C70.8603 35.5363 72.6057 38.3556 73.3076 40"></path>
+              <path d="M45.3697 34.2658C41.8877 32.1376 39.7113 28.6222 39.7113 23.2283C39.7113 20.3101 40.3483 17.7986 41.4845 15.6968C40.3605 11.9182 39.662 6.85125 40.7522 5.23168C42.5699 2.53117 49.3177 4.6027 52.1188 8.24095C53.831 7.85521 55.6556 7.66186 57.5491 7.66186C59.3929 7.66186 61.1713 7.84519 62.8442 8.21095C65.6593 4.59134 72.375 2.5386 74.1877 5.23168C75.2599 6.82461 74.6019 11.7525 73.5105 15.5094C70.8603 17.5363 72.6057 20.3556 73.3076 22C74.1352 24.6488 74.811 27.2229 74.811 30.2283C74.811 35.6222 72.2105 39.1376 68.7285 41.2658C69.8603 42.5363 71.6057 45.3556 72.3076 47"></path>
               <path d="M49.0747 19.8242V22.4999"></path>
               <path d="M54.0991 28C54.6651 29.0893 55.7863 30.0812 57.9929 30.0812C59.0642 30.0812 59.8797 29.8461 60.5 29.4788"></path>
               <path d="M66.9126 19.8242V22.4999"></path>
@@ -135,7 +135,7 @@
         <?php endif; ?>
       </nav>
       <form class="joe_header__above-search" method="post" action="<?php $this->options->siteUrl(); ?>">
-        <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? $this->archiveTitle(' &raquo; ', '', '') : '' ?>" class="input" type="text" />
+        <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? $this->archiveTitle(' » ', '', '') : '' ?>" class="input" type="text" />
         <button type="submit" class="submit">Search</button>
         <span class="icon"></span>
         <nav class="result">
@@ -159,7 +159,7 @@
 
   <div class="joe_header__below">
     <div class="joe_container">
-      <?php if ($this->is('post')) :  ?>
+      <?php if ($this->is('post')) : ?>
         <div class="joe_header__below-title"><?php $this->title() ?></div>
       <?php endif; ?>
       <nav class="joe_header__below-class">
@@ -235,7 +235,7 @@
     <div class="joe_container">
       <div class="joe_header__searchout-inner">
         <form class="search" method="post" action="<?php $this->options->siteUrl(); ?>">
-          <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? $this->archiveTitle(' &raquo; ', '', '') : '' ?>" class="input" type="text" />
+          <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? $this->archiveTitle(' » ', '', '') : '' ?>" class="input" type="text" />
           <button type="submit" class="submit">Search</button>
         </form>
         <?php $this->widget('Widget_Metas_Tag_Cloud', array('sort' => 'count', 'ignoreZeroCount' => true, 'desc' => true, 'limit' => 20))->to($tags); ?>

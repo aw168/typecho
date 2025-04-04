@@ -4,8 +4,8 @@
       <svg class="joe_header__above-slideicon" viewBox="0 0 1152 1024" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
         <path d="M76.032 872a59.968 59.968 0 1 0 0 120h999.936a59.968 59.968 0 1 0 0-120H76.032zm16-420.032a59.968 59.968 0 1 0 0 120h599.936a59.968 59.968 0 1 0 0-119.936H92.032zM76.032 32a59.968 59.968 0 1 0 0 120h999.936a60.032 60.032 0 0 0 0-120H76.032z" />
       </svg>
-      <a title="<?php echo $this->options->title() ? $this->options->title() : '默认标题'; ?>" class="joe_header__above-logo" href="<?php $this->options->siteUrl(); ?>">
-        <img class="lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?php $this->options->JLogo() ?>" alt="<?php echo $this->options->title() ? $this->options->title() : '默认标题'; ?>" />
+      <a title="<?php echo htmlspecialchars($this->options->title ? $this->options->title : '默认标题'); ?>" class="joe_header__above-logo" href="<?php $this->options->siteUrl(); ?>">
+        <img class="lazyload" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="<?php echo htmlspecialchars($this->options->JLogo ? $this->options->JLogo() : ''); ?>" alt="<?php echo htmlspecialchars($this->options->title ? $this->options->title : '默认标题'); ?>" />
         <svg class="profile-color-modes" height="45" viewBox="0 0 106 60" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
           <g class="profile-color-modes-illu-group profile-color-modes-illu-red">
             <path d="M37.5 58.5V57.5C37.5 49.768 43.768 43.5 51.5 43.5V43.5C59.232 43.5 65.5 49.768 65.5 57.5V58.5"></path>
@@ -84,11 +84,11 @@
         <?php $this->widget('Widget_Contents_Page_List')->to($pages); ?>
         <?php if (count($pages->stack) <= $this->options->JNavMaxNum) : ?>
           <?php foreach ($pages->stack as $item) : ?>
-            <a class="item <?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo $item['permalink'] ?>" title="<?php echo $item['title'] ?>"><?php echo $item['title'] ?></a>
+            <a class="item <?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo $item['permalink'] ?>" title="<?php echo htmlspecialchars($item['title']); ?>"><?php echo htmlspecialchars($item['title']); ?></a>
           <?php endforeach; ?>
         <?php else : ?>
           <?php foreach (array_slice($pages->stack, 0, $this->options->JNavMaxNum) as $item) : ?>
-            <a class="item <?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo $item['permalink'] ?>" title="<?php echo $item['title'] ?>"><?php echo $item['title'] ?></a>
+            <a class="item <?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo $item['permalink'] ?>" title="<?php echo htmlspecialchars($item['title']); ?>"><?php echo htmlspecialchars($item['title']); ?></a>
           <?php endforeach; ?>
           <div class="joe_dropdown" trigger="hover" placement="60px" style="margin-right: 15px;">
             <div class="joe_dropdown__link">
@@ -99,7 +99,7 @@
             </div>
             <nav class="joe_dropdown__menu">
               <?php foreach (array_slice($pages->stack, $this->options->JNavMaxNum) as $item) : ?>
-                <a class="<?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo $item['permalink'] ?>" title="<?php echo $item['title'] ?>"><?php echo $item['title'] ?></a>
+                <a class="<?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo $item['permalink'] ?>" title="<?php echo htmlspecialchars($item['title']); ?>"><?php echo htmlspecialchars($item['title']); ?></a>
               <?php endforeach; ?>
             </nav>
           </div>
@@ -128,23 +128,23 @@
             </div>
             <nav class="joe_dropdown__menu">
               <?php foreach ($custom as $item) : ?>
-                <a href="<?php echo $item['url'] ?>" target="_blank" rel="noopener noreferrer nofollow"><?php echo $item['title'] ?></a>
+                <a href="<?php echo htmlspecialchars($item['url']); ?>" target="_blank" rel="noopener noreferrer nofollow"><?php echo htmlspecialchars($item['title']); ?></a>
               <?php endforeach; ?>
             </nav>
           </div>
         <?php endif; ?>
       </nav>
       <form class="joe_header__above-search" method="post" action="<?php $this->options->siteUrl(); ?>">
-        <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? $this->archiveTitle(' » ', '', '') : '' ?>" class="input" type="text" />
+        <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? $this->archiveTitle(' » ', '', '') : ''; ?>" class="input" type="text" />
         <button type="submit" class="submit">Search</button>
         <span class="icon"></span>
         <nav class="result">
           <?php $this->widget('Widget_Contents_Hot@Search', 'pageSize=5')->to($item); ?>
           <?php $index = 1; ?>
           <?php while ($item->next()) : ?>
-            <a href="<?php $item->permalink(); ?>" title="<?php $item->title(); ?>" class="item">
+            <a href="<?php $item->permalink(); ?>" title="<?php echo htmlspecialchars($item->title()); ?>" class="item">
               <span class="sort"><?php echo $index; ?></span>
-              <span class="text"><?php $item->title(); ?></span>
+              <span class="text"><?php echo htmlspecialchars($item->title()); ?></span>
               <span class="views"><?php echo number_format($item->views); ?> 阅读</span>
             </a>
             <?php $index++; ?>
@@ -168,11 +168,11 @@
           <?php if ($category->levels === 0) : ?>
             <?php $children = $category->getAllChildren($category->mid); ?>
             <?php if (empty($children)) : ?>
-              <a class="item <?php echo $this->is('category', $category->slug) ? 'active' : '' ?>" href="<?php $category->permalink(); ?>" title="<?php $category->name(); ?>"><?php $category->name(); ?></a>
+              <a class="item <?php echo $this->is('category', $category->slug) ? 'active' : '' ?>" href="<?php $category->permalink(); ?>" title="<?php echo htmlspecialchars($category->name()); ?>"><?php echo htmlspecialchars($category->name()); ?></a>
             <?php else : ?>
               <div class="joe_dropdown" trigger="hover">
                 <div class="joe_dropdown__link">
-                  <a class="item <?php echo $this->is('category', $category->slug) ? 'active' : '' ?>" href="<?php $category->permalink(); ?>" title="<?php $category->name(); ?>"><?php $category->name(); ?></a>
+                  <a class="item <?php echo $this->is('category', $category->slug) ? 'active' : '' ?>" href="<?php $category->permalink(); ?>" title="<?php echo htmlspecialchars($category->name()); ?>"><?php echo htmlspecialchars($category->name()); ?></a>
                   <svg class="joe_dropdown__link-icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="13" height="13">
                     <path d="M561.873 725.165c-11.262 11.262-26.545 21.72-41.025 18.502-14.479 2.413-28.154-8.849-39.415-18.502L133.129 375.252c-17.697-17.696-17.697-46.655 0-64.352s46.655-17.696 64.351 0l324.173 333.021 324.977-333.02c17.696-17.697 46.655-17.697 64.351 0s17.697 46.655 0 64.351L561.873 725.165z" fill="var(--minor)" />
                   </svg>
@@ -180,7 +180,7 @@
                 <nav class="joe_dropdown__menu">
                   <?php foreach ($children as $mid) : ?>
                     <?php $child = $category->getCategory($mid); ?>
-                    <a class="<?php echo $this->is('category', $child['slug']) ? 'active' : '' ?>" href="<?php echo $child['permalink'] ?>" title="<?php echo $child['name']; ?>"><?php echo $child['name']; ?></a>
+                    <a class="<?php echo $this->is('category', $child['slug']) ? 'active' : '' ?>" href="<?php echo $child['permalink'] ?>" title="<?php echo htmlspecialchars($child['name']); ?>"><?php echo htmlspecialchars($child['name']); ?></a>
                   <?php endforeach; ?>
                 </nav>
               </div>
@@ -197,7 +197,7 @@
                 <path d="M319.824 319.804c0-105.974 85.909-191.883 191.882-191.883s191.883 85.91 191.883 191.883c0 26.57-5.405 51.88-15.171 74.887-5.526 14.809-2.082 31.921 20.398 38.345 23.876 6.822 36.732-8.472 41.44-20.583 11.167-28.729 17.294-59.973 17.294-92.65 0-141.297-114.545-255.842-255.843-255.842S255.863 178.506 255.863 319.804s114.545 255.843 255.843 255.843v-63.961c-105.973-.001-191.882-85.909-191.882-191.882z" />
                 <path d="M512 255.843s21.49-5.723 21.49-31.306S512 191.882 512 191.882c-70.65 0-127.921 57.273-127.921 127.922 0 3.322.126 6.615.375 9.875.264 3.454 14.94 18.116 37.044 14.425 22.025-3.679 26.6-21.93 26.6-21.93-.028-.788-.06-1.575-.06-2.37.001-35.325 28.637-63.961 63.962-63.961z" />
               </svg>
-              <span><?php $this->user->screenName(); ?></span>
+              <span><?php echo htmlspecialchars($this->user->screenName()); ?></span>
             </div>
             <nav class="joe_dropdown__menu">
               <?php if ($this->user->group == 'administrator' || $this->user->group == 'editor' || $this->user->group == 'contributor') : ?>
@@ -235,7 +235,7 @@
     <div class="joe_container">
       <div class="joe_header__searchout-inner">
         <form class="search" method="post" action="<?php $this->options->siteUrl(); ?>">
-          <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? $this->archiveTitle(' » ', '', '') : '' ?>" class="input" type="text" />
+          <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? $this->archiveTitle(' » ', '', '') : ''; ?>" class="input" type="text" />
           <button type="submit" class="submit">Search</button>
         </form>
         <?php $this->widget('Widget_Metas_Tag_Cloud', array('sort' => 'count', 'ignoreZeroCount' => true, 'desc' => true, 'limit' => 20))->to($tags); ?>
@@ -288,7 +288,7 @@
             ]; ?>
             <?php while ($tags->next()) : ?>
               <li class="item">
-                <a style="background: <?php echo $colors[mt_rand(0, count($colors) - 1)] ?>" href="<?php $tags->permalink(); ?>"><?php $tags->name(); ?></a>
+                <a style="background: <?php echo $colors[mt_rand(0, count($colors) - 1)] ?>" href="<?php $tags->permalink(); ?>"><?php echo htmlspecialchars($tags->name()); ?></a>
               </li>
             <?php endwhile; ?>
           </ul>
@@ -298,11 +298,11 @@
   </div>
 
   <div class="joe_header__slideout">
-    <img width="100%" height="150" class="joe_header__slideout-image" src="<?php $this->options->JAside_Wap_Image() ?>" alt="侧边栏壁纸" />
+    <img width="100%" height="150" class="joe_header__slideout-image" src="<?php echo htmlspecialchars($this->options->JAside_Wap_Image ? $this->options->JAside_Wap_Image() : ''); ?>" alt="侧边栏壁纸" />
     <div class="joe_header__slideout-author">
-      <img width="50" height="50" class="avatar lazyload" src="<?php _getAvatarLazyload(); ?>" data-src="<?php $this->options->JAside_Author_Avatar ? $this->options->JAside_Author_Avatar() : _getAvatarByMail($this->authorId ? $this->author->mail : $this->user->mail) ?>" alt="博主昵称" />
+      <img width="50" height="50" class="avatar lazyload" src="<?php _getAvatarLazyload(); ?>" data-src="<?php echo htmlspecialchars($this->options->JAside_Author_Avatar ? $this->options->JAside_Author_Avatar() : _getAvatarByMail($this->authorId ? $this->author->mail : $this->user->mail)); ?>" alt="博主昵称" />
       <div class="info">
-        <a class="link" href="<?php $this->options->JAside_Author_Link() ?>" target="_blank" rel="noopener noreferrer nofollow"><?php $this->options->JAside_Author_Nick ? $this->options->JAside_Author_Nick() : ($this->authorId ? $this->author->screenName() : $this->user->screenName()); ?></a>
+        <a class="link" href="<?php echo htmlspecialchars($this->options->JAside_Author_Link ? $this->options->JAside_Author_Link() : ''); ?>" target="_blank" rel="noopener noreferrer nofollow"><?php echo htmlspecialchars($this->options->JAside_Author_Nick ? $this->options->JAside_Author_Nick() : ($this->authorId ? $this->author->screenName() : $this->user->screenName())); ?></a>
         <p class="motto joe_motto"></p>
       </div>
     </div>
@@ -342,12 +342,12 @@
               <?php $children = $category->getAllChildren($category->mid); ?>
               <?php if (empty($children)) : ?>
                 <li>
-                  <a class="link <?php echo $this->is('category', $category->slug) ? 'current' : '' ?>" href="<?php $category->permalink(); ?>" title="<?php $category->name(); ?>"><?php $category->name(); ?></a>
+                  <a class="link <?php echo $this->is('category', $category->slug) ? 'current' : '' ?>" href="<?php $category->permalink(); ?>" title="<?php echo htmlspecialchars($category->name()); ?>"><?php echo htmlspecialchars($category->name()); ?></a>
                 </li>
               <?php else : ?>
                 <li>
                   <div class="link panel <?php echo $this->is('category', $category->slug) ? 'current' : '' ?>">
-                    <a href="<?php $category->permalink(); ?>" title="<?php $category->name(); ?>"><?php $category->name(); ?></a>
+                    <a href="<?php $category->permalink(); ?>" title="<?php echo htmlspecialchars($category->name()); ?>"><?php echo htmlspecialchars($category->name()); ?></a>
                     <svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="13" height="13">
                       <path d="M624.865 512.247L332.71 220.088c-12.28-12.27-12.28-32.186 0-44.457 12.27-12.28 32.186-12.28 44.457 0l314.388 314.388c12.28 12.27 12.28 32.186 0 44.457L377.167 848.863c-6.136 6.14-14.183 9.211-22.228 9.211s-16.092-3.071-22.228-9.211c-12.28-12.27-12.28-32.186 0-44.457l292.155-292.16z" />
                     </svg>
@@ -356,7 +356,7 @@
                     <?php foreach ($children as $mid) : ?>
                       <?php $child = $category->getCategory($mid); ?>
                       <li>
-                        <a class="link <?php echo $this->is('category', $child['slug']) ? 'current' : '' ?>" href="<?php echo $child['permalink'] ?>" title="<?php echo $child['name']; ?>"><?php echo $child['name']; ?></a>
+                        <a class="link <?php echo $this->is('category', $child['slug']) ? 'current' : '' ?>" href="<?php echo $child['permalink'] ?>" title="<?php echo htmlspecialchars($child['name']); ?>"><?php echo htmlspecialchars($child['name']); ?></a>
                       </li>
                     <?php endforeach; ?>
                   </ul>
@@ -377,7 +377,7 @@
         <ul class="slides panel-body">
           <?php foreach ($pages->stack as $item) : ?>
             <li>
-              <a class="link <?php echo $this->is('page', $item['slug']) ? 'current' : '' ?>" href="<?php echo $item['permalink'] ?>" title="<?php echo $item['title'] ?>"><?php echo $item['title'] ?></a>
+              <a class="link <?php echo $this->is('page', $item['slug']) ? 'current' : '' ?>" href="<?php echo $item['permalink'] ?>" title="<?php echo htmlspecialchars($item['title']); ?>"><?php echo htmlspecialchars($item['title']); ?></a>
             </li>
           <?php endforeach; ?>
         </ul>
@@ -394,7 +394,7 @@
           <ul class="slides panel-body">
             <?php foreach ($custom as $item) : ?>
               <li>
-                <a class="link" href="<?php echo $item['url'] ?>" target="_blank" rel="noopener noreferrer nofollow"><?php echo $item['title'] ?></a>
+                <a class="link" href="<?php echo htmlspecialchars($item['url']); ?>" target="_blank" rel="noopener noreferrer nofollow"><?php echo htmlspecialchars($item['title']); ?></a>
               </li>
             <?php endforeach; ?>
           </ul>

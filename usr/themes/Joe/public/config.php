@@ -16,11 +16,15 @@
 </script>
 <?php
 $fontUrl = $this->options->JCustomFont;
-if (strpos($fontUrl, 'woff2') !== false) $fontFormat = 'woff2';
-elseif (strpos($fontUrl, 'woff') !== false) $fontFormat = 'woff';
-elseif (strpos($fontUrl, 'ttf') !== false) $fontFormat = 'truetype';
-elseif (strpos($fontUrl, 'eot') !== false) $fontFormat = 'embedded-opentype';
-elseif (strpos($fontUrl, 'svg') !== false) $fontFormat = 'svg';
+$fontFormat = null;
+
+if ($fontUrl && is_string($fontUrl)) {
+    if (strpos($fontUrl, 'woff2') !== false) $fontFormat = 'woff2';
+    elseif (strpos($fontUrl, 'woff') !== false) $fontFormat = 'woff';
+    elseif (strpos($fontUrl, 'ttf') !== false) $fontFormat = 'truetype';
+    elseif (strpos($fontUrl, 'eot') !== false) $fontFormat = 'embedded-opentype';
+    elseif (strpos($fontUrl, 'svg') !== false) $fontFormat = 'svg';
+}
 ?>
 <style>
   @font-face {
@@ -34,7 +38,7 @@ elseif (strpos($fontUrl, 'svg') !== false) $fontFormat = 'svg';
   }
 
   body {
-    <?php if ($fontUrl) : ?>font-family: 'Joe Font';
+    <?php if ($fontUrl && is_string($fontUrl)) : ?>font-family: 'Joe Font';
     <?php else : ?>font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
     <?php endif; ?>
   }

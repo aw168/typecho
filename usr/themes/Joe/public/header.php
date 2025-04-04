@@ -82,38 +82,57 @@
       <nav class="joe_header__above-nav">
         <a class="item <?php echo $this->is('index') ? 'active' : '' ?>" href="<?php echo htmlspecialchars($this->options->siteUrl() ?: ''); ?>" title="首页">首页</a>
         <?php $this->widget('Widget_Contents_Page_List')->to($pages); ?>
-        <?php if (count($pages->stack) <= $this->options->JNavMaxNum) : ?>
-          <?php foreach ($pages->stack as $item) : ?>
-            <a class="item <?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($item['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($item['title'] ?: ''); ?>"><?php echo htmlspecialchars($item['title'] ?: ''); ?></a>
-          <?php endforeach; ?>
-        <?php else : ?>
-          <?php foreach (array_slice($pages->stack, 0, $this->options->JNavMaxNum) as $item) : ?>
-            <a class="item <?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($item['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($item['title'] ?: ''); ?>"><?php echo htmlspecialchars($item['title'] ?: ''); ?></a>
-          <?php endforeach; ?>
-          <div class="joe_dropdown" trigger="hover" placement="60px" style="margin-right: 15px;">
-            <div class="joe_dropdown__link">
-              <a href="#" rel="nofollow">更多</a>
-              <svg class="joe_header__above-nav-more-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
-                <path d="M561.873 725.165c-11.262 11.262-26.545 21.72-41.025 18.502-14.479 2.413-28.154-8.849-39.415-18.502L133.129 375.252c-17.697-17.696-17.697-46.655 0-64.352s46.655-17.696 64.351 0l324.173 333.021 324.977-333.02c17.696-17.697 46.655-17.697 64.351 0s17.697 46.655 0 64.351L561.873 725.165z" p-id="3535" fill="var(--main)"></path>
-              </svg>
+        <?php // FIX: Check if $pages exists and stack is a non-empty array before proceeding
+              if ($pages && property_exists($pages, 'stack') && is_array($pages->stack) && !empty($pages->stack)) : ?>
+          <?php if (isset($this->options->JNavMaxNum) && count($pages->stack) <= $this->options->JNavMaxNum) : ?>
+            <?php foreach ($pages->stack as $item) : ?>
+              <?php if (is_array($item) && isset($item['slug']) && isset($item['permalink']) && isset($item['title'])): // Add inner check for robustness ?>
+              <a class="item <?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($item['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($item['title'] ?: ''); ?>"><?php echo htmlspecialchars($item['title'] ?: ''); ?></a>
+              <?php endif; ?>
+            <?php endforeach; ?>
+          <?php elseif (isset($this->options->JNavMaxNum)) : // Handle the case where there are more pages than JNavMaxNum ?>
+            <?php foreach (array_slice($pages->stack, 0, $this->options->JNavMaxNum) as $item) : ?>
+               <?php if (is_array($item) && isset($item['slug']) && isset($item['permalink']) && isset($item['title'])): // Add inner check for robustness ?>
+               <a class="item <?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($item['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($item['title'] ?: ''); ?>"><?php echo htmlspecialchars($item['title'] ?: ''); ?></a>
+               <?php endif; ?>
+            <?php endforeach; ?>
+            <div class="joe_dropdown" trigger="hover" placement="60px" style="margin-right: 15px;">
+              <div class="joe_dropdown__link">
+                <a href="#" rel="nofollow">更多</a>
+                <svg class="joe_header__above-nav-more-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+                  <path d="M561.873 725.165c-11.262 11.262-26.545 21.72-41.025 18.502-14.479 2.413-28.154-8.849-39.415-18.502L133.129 375.252c-17.697-17.696-17.697-46.655 0-64.352s46.655-17.696 64.351 0l324.173 333.021 324.977-333.02c17.696-17.697 46.655-17.697 64.351 0s17.697 46.655 0 64.351L561.873 725.165z" p-id="3535" fill="var(--main)"></path>
+                </svg>
+              </div>
+              <nav class="joe_dropdown__menu">
+                <?php foreach (array_slice($pages->stack, $this->options->JNavMaxNum) as $item) : ?>
+                   <?php if (is_array($item) && isset($item['slug']) && isset($item['permalink']) && isset($item['title'])): // Add inner check for robustness ?>
+                   <a class="<?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($item['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($item['title'] ?: ''); ?>"><?php echo htmlspecialchars($item['title'] ?: ''); ?></a>
+                   <?php endif; ?>
+                <?php endforeach; ?>
+              </nav>
             </div>
-            <nav class="joe_dropdown__menu">
-              <?php foreach (array_slice($pages->stack, $this->options->JNavMaxNum) as $item) : ?>
-                <a class="<?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($item['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($item['title'] ?: ''); ?>"><?php echo htmlspecialchars($item['title'] ?: ''); ?></a>
-              <?php endforeach; ?>
-            </nav>
-          </div>
-        <?php endif; ?>
+           <?php else: // Fallback if JNavMaxNum is not set - show all pages ?>
+             <?php foreach ($pages->stack as $item) : ?>
+               <?php if (is_array($item) && isset($item['slug']) && isset($item['permalink']) && isset($item['title'])): // Add inner check for robustness ?>
+               <a class="item <?php echo $this->is('page', $item['slug']) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($item['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($item['title'] ?: ''); ?>"><?php echo htmlspecialchars($item['title'] ?: ''); ?></a>
+               <?php endif; ?>
+             <?php endforeach; ?>
+          <?php endif; ?>
+        <?php endif; // End check for $pages ?>
         <?php
         $custom = [];
         $custom_text = $this->options->JCustomNavs;
         if ($custom_text) {
+          // Ensure explode has 2 parts before accessing index 1
           $custom_arr = explode("\r\n", $custom_text);
           if (count($custom_arr) > 0) {
             for ($i = 0; $i < count($custom_arr); $i++) {
-              $title = explode("||", $custom_arr[$i])[0];
-              $url = explode("||", $custom_arr[$i])[1];
-              $custom[] = array("title" => trim($title), "url" => trim($url));
+              $parts = explode("||", $custom_arr[$i]);
+              $title = isset($parts[0]) ? trim($parts[0]) : '';
+              $url = isset($parts[1]) ? trim($parts[1]) : '#'; // Default to '#' if URL part is missing
+              if ($title) { // Only add if title is not empty
+                 $custom[] = array("title" => $title, "url" => $url);
+              }
             }
           }
         }
@@ -128,27 +147,38 @@
             </div>
             <nav class="joe_dropdown__menu">
               <?php foreach ($custom as $item) : ?>
-                <a href="<?php echo htmlspecialchars($item['url'] ?: ''); ?>" target="_blank" rel="noopener noreferrer nofollow"><?php echo htmlspecialchars($item['title'] ?: ''); ?></a>
+                 <?php if (is_array($item) && isset($item['url']) && isset($item['title'])): // Check item structure ?>
+                 <a href="<?php echo htmlspecialchars($item['url'] ?: '#'); ?>" target="_blank" rel="noopener noreferrer nofollow"><?php echo htmlspecialchars($item['title'] ?: ''); ?></a>
+                 <?php endif; ?>
               <?php endforeach; ?>
             </nav>
           </div>
         <?php endif; ?>
       </nav>
       <form class="joe_header__above-search" method="post" action="<?php echo htmlspecialchars($this->options->siteUrl() ?: ''); ?>">
-        <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? $this->archiveTitle(' » ', '', '') : ''; ?>" class="input" type="text" />
+        <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? htmlspecialchars($this->archiveTitle(' » ', '', '')) : ''; ?>" class="input" type="text" />
         <button type="submit" class="submit">Search</button>
         <span class="icon"></span>
         <nav class="result">
-          <?php $this->widget('Widget_Contents_Hot@Search', 'pageSize=5')->to($item); ?>
-          <?php $index = 1; ?>
-          <?php while ($item->next()) : ?>
-            <a href="<?php echo htmlspecialchars($item->permalink() ?: ''); ?>" title="<?php echo htmlspecialchars($item->title() ?: ''); ?>" class="item">
-              <span class="sort"><?php echo $index; ?></span>
-              <span class="text"><?php echo htmlspecialchars($item->title() ?: ''); ?></span>
-              <span class="views"><?php echo number_format($item->views); ?> 阅读</span>
-            </a>
-            <?php $index++; ?>
-          <?php endwhile; ?>
+          <?php
+            // Check if Widget_Contents_Hot exists before calling - useful for different Typecho versions/plugins
+            if (class_exists('Widget_Contents_Hot')) {
+                $this->widget('Widget_Contents_Hot@Search', 'pageSize=5')->to($itemWidget);
+                if ($itemWidget && $itemWidget->have()) { // Check if the widget returned results
+                    $index = 1;
+                    while ($itemWidget->next()) : ?>
+                      <a href="<?php echo htmlspecialchars($itemWidget->permalink() ?: ''); ?>" title="<?php echo htmlspecialchars($itemWidget->title() ?: ''); ?>" class="item">
+                        <span class="sort"><?php echo $index; ?></span>
+                        <span class="text"><?php echo htmlspecialchars($itemWidget->title() ?: ''); ?></span>
+                        <span class="views"><?php echo number_format($itemWidget->views); ?> 阅读</span>
+                      </a>
+                    <?php $index++;
+                    endwhile;
+                }
+            } else {
+                 // Optional: echo "";
+            }
+          ?>
         </nav>
       </form>
       <svg class="joe_header__above-searchicon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="20" height="20">
@@ -164,53 +194,58 @@
       <?php endif; ?>
       <nav class="joe_header__below-class">
         <?php $this->widget('Widget_Metas_Category_List')->to($category); ?>
-        <?php while ($category->next()) : ?>
-          <?php if ($category->levels === 0) : ?>
-            <?php $children = $category->getAllChildren($category->mid); ?>
-            <?php if (empty($children)) : ?>
-              <a class="item <?php echo $this->is('category', $category->slug) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($category->permalink() ?: ''); ?>" title="<?php echo htmlspecialchars($category->name() ?: ''); ?>"><?php echo htmlspecialchars($category->name() ?: ''); ?></a>
-            <?php else : ?>
-              <div class="joe_dropdown" trigger="hover">
-                <div class="joe_dropdown__link">
-                  <a class="item <?php echo $this->is('category', $category->slug) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($category->permalink() ?: ''); ?>" title="<?php echo htmlspecialchars($category->name() ?: ''); ?>"><?php echo htmlspecialchars($category->name() ?: ''); ?></a>
-                  <svg class="joe_dropdown__link-icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="13" height="13">
-                    <path d="M561.873 725.165c-11.262 11.262-26.545 21.72-41.025 18.502-14.479 2.413-28.154-8.849-39.415-18.502L133.129 375.252c-17.697-17.696-17.697-46.655 0-64.352s46.655-17.696 64.351 0l324.173 333.021 324.977-333.02c17.696-17.697 46.655-17.697 64.351 0s17.697 46.655 0 64.351L561.873 725.165z" fill="var(--minor)" />
-                  </svg>
-                </div>
-                <nav class="joe_dropdown__menu">
-                  <?php foreach ($children as $mid) : ?>
-                    <?php $child = $category->getCategory($mid); ?>
-                    <a class="<?php echo $this->is('category', $child['slug']) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($child['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($child['name'] ?: ''); ?>"><?php echo htmlspecialchars($child['name'] ?: ''); ?></a>
-                  <?php endforeach; ?>
-                </nav>
-              </div>
-            <?php endif; ?>
-          <?php endif; ?>
-        <?php endwhile; ?>
+        <?php // Check if category widget returned results
+              if ($category && $category->have()) :
+                 while ($category->next()) : ?>
+                   <?php if ($category->levels === 0) : ?>
+                     <?php $children = $category->getAllChildren($category->mid); ?>
+                     <?php if (empty($children)) : ?>
+                       <a class="item <?php echo $this->is('category', $category->slug) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($category->permalink() ?: ''); ?>" title="<?php echo htmlspecialchars($category->name() ?: ''); ?>"><?php echo htmlspecialchars($category->name() ?: ''); ?></a>
+                     <?php else : ?>
+                       <div class="joe_dropdown" trigger="hover">
+                         <div class="joe_dropdown__link">
+                           <a class="item <?php echo $this->is('category', $category->slug) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($category->permalink() ?: ''); ?>" title="<?php echo htmlspecialchars($category->name() ?: ''); ?>"><?php echo htmlspecialchars($category->name() ?: ''); ?></a>
+                           <svg class="joe_dropdown__link-icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="13" height="13">
+                             <path d="M561.873 725.165c-11.262 11.262-26.545 21.72-41.025 18.502-14.479 2.413-28.154-8.849-39.415-18.502L133.129 375.252c-17.697-17.696-17.697-46.655 0-64.352s46.655-17.696 64.351 0l324.173 333.021 324.977-333.02c17.696-17.697 46.655-17.697 64.351 0s17.697 46.655 0 64.351L561.873 725.165z" fill="var(--minor)" />
+                           </svg>
+                         </div>
+                         <nav class="joe_dropdown__menu">
+                           <?php foreach ($children as $mid) : ?>
+                             <?php $child = $category->getCategory($mid); ?>
+                             <?php if (is_array($child) && isset($child['slug']) && isset($child['permalink']) && isset($child['name'])): // Check child structure ?>
+                             <a class="<?php echo $this->is('category', $child['slug']) ? 'active' : '' ?>" href="<?php echo htmlspecialchars($child['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($child['name'] ?: ''); ?>"><?php echo htmlspecialchars($child['name'] ?: ''); ?></a>
+                             <?php endif; ?>
+                           <?php endforeach; ?>
+                         </nav>
+                       </div>
+                     <?php endif; ?>
+                   <?php endif; ?>
+                 <?php endwhile; ?>
+              <?php endif; // End check for category ?>
       </nav>
       <div class="joe_header__below-sign">
         <?php if ($this->user->hasLogin()) : ?>
           <div class="joe_dropdown" trigger="click">
             <div class="joe_dropdown__link">
               <svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
-                <path d="M231.594 610.125C135.087 687.619 71.378 804.28 64.59 935.994c-.373 7.25 3.89 23.307 30.113 23.307s33.512-16.06 33.948-23.301c6.861-114.025 63.513-214.622 148.5-280.346 3.626-2.804 16.543-17.618 3.24-39.449-13.702-22.483-40.863-12.453-48.798-6.08zm280.112-98.44v63.96c204.109 0 370.994 159.345 383.06 360.421.432 7.219 8.649 23.347 32.44 23.347s31.991-16.117 31.62-23.342c-12.14-236.422-207.676-424.386-447.12-424.386z" />
-                <path d="M319.824 319.804c0-105.974 85.909-191.883 191.882-191.883s191.883 85.91 191.883 191.883c0 26.57-5.405 51.88-15.171 74.887-5.526 14.809-2.082 31.921 20.398 38.345 23.876 6.822 36.732-8.472 41.44-20.583 11.167-28.729 17.294-59.973 17.294-92.65 0-141.297-114.545-255.842-255.843-255.842S255.863 178.506 255.863 319.804s114.545 255.843 255.843 255.843v-63.961c-105.973-.001-191.882-85.909-191.882-191.882z" />
-                <path d="M512 255.843s21.49-5.723 21.49-31.306S512 191.882 512 191.882c-70.65 0-127.921 57.273-127.921 127.922 0 3.322.126 6.615.375 9.875.264 3.454 14.94 18.116 37.044 14.425 22.025-3.679 26.6-21.93 26.6-21.93-.028-.788-.06-1.575-.06-2.37.001-35.325 28.637-63.961 63.962-63.961z" />
+                 <path d="M231.594 610.125C135.087 687.619 71.378 804.28 64.59 935.994c-.373 7.25 3.89 23.307 30.113 23.307s33.512-16.06 33.948-23.301c6.861-114.025 63.513-214.622 148.5-280.346 3.626-2.804 16.543-17.618 3.24-39.449-13.702-22.483-40.863-12.453-48.798-6.08zm280.112-98.44v63.96c204.109 0 370.994 159.345 383.06 360.421.432 7.219 8.649 23.347 32.44 23.347s31.991-16.117 31.62-23.342c-12.14-236.422-207.676-424.386-447.12-424.386z" />
+                 <path d="M319.824 319.804c0-105.974 85.909-191.883 191.882-191.883s191.883 85.91 191.883 191.883c0 26.57-5.405 51.88-15.171 74.887-5.526 14.809-2.082 31.921 20.398 38.345 23.876 6.822 36.732-8.472 41.44-20.583 11.167-28.729 17.294-59.973 17.294-92.65 0-141.297-114.545-255.842-255.843-255.842S255.863 178.506 255.863 319.804s114.545 255.843 255.843 255.843v-63.961c-105.973-.001-191.882-85.909-191.882-191.882z" />
+                 <path d="M512 255.843s21.49-5.723 21.49-31.306S512 191.882 512 191.882c-70.65 0-127.921 57.273-127.921 127.922 0 3.322.126 6.615.375 9.875.264 3.454 14.94 18.116 37.044 14.425 22.025-3.679 26.6-21.93 26.6-21.93-.028-.788-.06-1.575-.06-2.37.001-35.325 28.637-63.961 63.962-63.961z" />
               </svg>
-              <span><?php echo htmlspecialchars($this->user->screenName() ?: ''); ?></span>
+              <span><?php echo htmlspecialchars($this->user->screenName ?: ''); // Use null coalescing operator ?></span>
             </div>
             <nav class="joe_dropdown__menu">
-              <?php if ($this->user->group == 'administrator' || $this->user->group == 'editor' || $this->user->group == 'contributor') : ?>
-                <a rel="noopener noreferrer nofollow" target="_blank" href="<?php echo htmlspecialchars($this->options->adminUrl("manage-posts.php") ?: ''); ?>">管理文章</a>
+              <?php if ($this->user->pass('administrator', true) || $this->user->pass('editor', true) || $this->user->pass('contributor', true)) : ?>
+                <a rel="noopener noreferrer nofollow" target="_blank" href="<?php echo htmlspecialchars($this->options->adminUrl('manage-posts.php') ?: ''); ?>">管理文章</a>
               <?php endif; ?>
-              <?php if ($this->user->group == 'administrator' || $this->user->group == 'editor') : ?>
-                <a rel="noopener noreferrer nofollow" target="_blank" href="<?php echo htmlspecialchars($this->options->adminUrl("manage-comments.php") ?: ''); ?>">管理评论</a>
+              <?php if ($this->user->pass('administrator', true) || $this->user->pass('editor', true)) : ?>
+                <a rel="noopener noreferrer nofollow" target="_blank" href="<?php echo htmlspecialchars($this->options->adminUrl('manage-comments.php') ?: ''); ?>">管理评论</a>
               <?php endif; ?>
-              <?php if ($this->user->group == 'administrator') : ?>
-                <a rel="noopener noreferrer nofollow" target="_blank" href="<?php echo htmlspecialchars($this->options->adminUrl("options-theme.php") ?: ''); ?>">修改外观</a>
+              <?php if ($this->user->pass('administrator', true)) : ?>
+                <a rel="noopener noreferrer nofollow" target="_blank" href="<?php echo htmlspecialchars($this->options->adminUrl('options-theme.php') ?: ''); ?>">修改外观</a>
               <?php endif; ?>
               <a rel="noopener noreferrer nofollow" target="_blank" href="<?php echo htmlspecialchars($this->options->adminUrl() ?: ''); ?>">进入后台</a>
-              <a href="<?php echo htmlspecialchars($this->options->logoutUrl() ?: ''); ?>">退出登录</a>
+              <a href="<?php echo htmlspecialchars($this->options->logoutUrl ?: ''); // Use null coalescing operator ?>">退出登录</a>
             </nav>
           </div>
         <?php else : ?>
@@ -235,56 +270,27 @@
     <div class="joe_container">
       <div class="joe_header__searchout-inner">
         <form class="search" method="post" action="<?php echo htmlspecialchars($this->options->siteUrl() ?: ''); ?>">
-          <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? $this->archiveTitle(' » ', '', '') : ''; ?>" class="input" type="text" />
+          <input maxlength="16" autocomplete="off" placeholder="请输入关键字..." name="s" value="<?php echo $this->is('search') ? htmlspecialchars($this->archiveTitle(' » ', '', '')) : ''; ?>" class="input" type="text" />
           <button type="submit" class="submit">Search</button>
         </form>
         <?php $this->widget('Widget_Metas_Tag_Cloud', array('sort' => 'count', 'ignoreZeroCount' => true, 'desc' => true, 'limit' => 20))->to($tags); ?>
-        <?php if ($tags->have()) : ?>
+        <?php // Check if tags widget returned results
+              if ($tags && $tags->have()) : ?>
           <div class="title">
             <svg class="icon" viewBox="0 0 1445 1024" xmlns="http://www.w3.org/2000/svg" width="22" height="22">
-              <path d="M1055.021 277.865a348.762 348.762 0 0 1 348.401 348.341c0 178.96-136.132 327.68-311.778 346.172l-758.603 2.35A291.238 291.238 0 0 1 42.165 683.79a291.238 291.238 0 0 1 273.227-290.334 369.242 369.242 0 0 1 368.4-351.292 370.568 370.568 0 0 1 344.184 236.905c9.336-.783 18.19-1.205 27.045-1.205zM683.791 156.25a255.036 255.036 0 0 0-254.735 254.796V507h-95.955a177.032 177.032 0 0 0-176.79 176.791 177.032 177.032 0 0 0 176.79 176.85h721.98a234.677 234.677 0 0 0 234.316-234.435 234.616 234.616 0 0 0-234.316-234.255 234.616 234.616 0 0 0-234.315 234.315v18.07H706.56v-18.07A348.4 348.4 0 0 1 915.817 307.2a255.578 255.578 0 0 0-232.026-151.01z" />
+               <path d="M1055.021 277.865a348.762 348.762 0 0 1 348.401 348.341c0 178.96-136.132 327.68-311.778 346.172l-758.603 2.35A291.238 291.238 0 0 1 42.165 683.79a291.238 291.238 0 0 1 273.227-290.334 369.242 369.242 0 0 1 368.4-351.292 370.568 370.568 0 0 1 344.184 236.905c9.336-.783 18.19-1.205 27.045-1.205zM683.791 156.25a255.036 255.036 0 0 0-254.735 254.796V507h-95.955a177.032 177.032 0 0 0-176.79 176.791 177.032 177.032 0 0 0 176.79 176.85h721.98a234.677 234.677 0 0 0 234.316-234.435 234.616 234.616 0 0 0-234.316-234.255 234.616 234.616 0 0 0-234.315 234.315v18.07H706.56v-18.07A348.4 348.4 0 0 1 915.817 307.2a255.578 255.578 0 0 0-232.026-151.01z" />
             </svg>标签搜索
           </div>
           <ul class="cloud">
-            <?php $colors  = [
-              '#F8D800',
-              '#0396FF',
-              '#EA5455',
-              '#7367F0',
-              '#32CCBC',
-              '#F6416C',
-              '#28C76F',
-              '#9F44D3',
-              '#F55555',
-              '#736EFE',
-              '#E96D71',
-              '#DE4313',
-              '#D939CD',
-              '#4C83FF',
-              '#F072B6',
-              '#C346C2',
-              '#5961F9',
-              '#FD6585',
-              '#465EFB',
-              '#FFC600',
-              '#FA742B',
-              '#5151E5',
-              '#BB4E75',
-              '#FF52E5',
-              '#49C628',
-              '#00EAFF',
-              '#F067B4',
-              '#F067B4',
-              '#ff9a9e',
-              '#00f2fe',
-              '#4facfe',
-              '#f093fb',
-              '#6fa3ef',
-              '#bc99c4',
-              '#46c47c',
-              '#f9bb3c',
-              '#e8583d',
-              '#f68e5f',
+            <?php $colors = [ /* Color array remains the same */
+                '#F8D800', '#0396FF', '#EA5455', '#7367F0', '#32CCBC',
+                '#F6416C', '#28C76F', '#9F44D3', '#F55555', '#736EFE',
+                '#E96D71', '#DE4313', '#D939CD', '#4C83FF', '#F072B6',
+                '#C346C2', '#5961F9', '#FD6585', '#465EFB', '#FFC600',
+                '#FA742B', '#5151E5', '#BB4E75', '#FF52E5', '#49C628',
+                '#00EAFF', '#F067B4', '#F067B4', '#ff9a9e', '#00f2fe',
+                '#4facfe', '#f093fb', '#6fa3ef', '#bc99c4', '#46c47c',
+                '#f9bb3c', '#e8583d', '#f68e5f',
             ]; ?>
             <?php while ($tags->next()) : ?>
               <li class="item">
@@ -292,7 +298,7 @@
               </li>
             <?php endwhile; ?>
           </ul>
-        <?php endif; ?>
+        <?php endif; // End check for tags ?>
       </div>
     </div>
   </div>
@@ -300,27 +306,59 @@
   <div class="joe_header__slideout">
     <img width="100%" height="150" class="joe_header__slideout-image" src="<?php echo htmlspecialchars($this->options->JAside_Wap_Image ? $this->options->JAside_Wap_Image() : ''); ?>" alt="侧边栏壁纸" />
     <div class="joe_header__slideout-author">
-      <img width="50" height="50" class="avatar lazyload" src="<?php _getAvatarLazyload(); ?>" data-src="<?php echo htmlspecialchars($this->options->JAside_Author_Avatar ? $this->options->JAside_Author_Avatar() : _getAvatarByMail($this->authorId ? $this->author->mail : $this->user->mail)); ?>" alt="博主昵称" />
-      <div class="info">
-        <a class="link" href="<?php echo htmlspecialchars($this->options->JAside_Author_Link ? $this->options->JAside_Author_Link() : ''); ?>" target="_blank" rel="noopener noreferrer nofollow"><?php echo htmlspecialchars($this->options->JAside_Author_Nick ? $this->options->JAside_Author_Nick() : ($this->authorId ? $this->author->screenName() : $this->user->screenName())); ?></a>
-        <p class="motto joe_motto"></p>
-      </div>
+       <?php
+           // Determine avatar source more safely
+           $avatarSrc = '';
+           if ($this->options->JAside_Author_Avatar) {
+               $avatarSrc = $this->options->JAside_Author_Avatar();
+           } else {
+               $authorMail = '';
+               if ($this->authorId && isset($this->author->mail)) {
+                   $authorMail = $this->author->mail;
+               } elseif ($this->user->hasLogin() && isset($this->user->mail)) {
+                   $authorMail = $this->user->mail;
+               }
+               if (function_exists('_getAvatarByMail')) { // Check if function exists
+                   $avatarSrc = _getAvatarByMail($authorMail);
+               }
+           }
+       ?>
+       <img width="50" height="50" class="avatar lazyload" src="<?php function_exists('_getAvatarLazyload') ? _getAvatarLazyload() : ''; ?>" data-src="<?php echo htmlspecialchars($avatarSrc); ?>" alt="博主昵称" />
+       <div class="info">
+          <?php
+              // Determine author name more safely
+              $authorName = '';
+              if ($this->options->JAside_Author_Nick) {
+                   $authorName = $this->options->JAside_Author_Nick();
+              } elseif ($this->authorId && isset($this->author->screenName)) {
+                   $authorName = $this->author->screenName();
+              } elseif ($this->user->hasLogin() && isset($this->user->screenName)) {
+                  $authorName = $this->user->screenName();
+              }
+          ?>
+          <a class="link" href="<?php echo htmlspecialchars($this->options->JAside_Author_Link ? $this->options->JAside_Author_Link() : ''); ?>" target="_blank" rel="noopener noreferrer nofollow"><?php echo htmlspecialchars($authorName); ?></a>
+          <p class="motto joe_motto"></p>
+       </div>
     </div>
     <ul class="joe_header__slideout-count">
       <?php Typecho_Widget::widget('Widget_Stat')->to($count); ?>
+      <?php if ($count && property_exists($count, 'publishedPostsNum')): // Check if count stats exist ?>
       <li class="item">
         <svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
-          <path d="M606.227 985.923H164.75c-69.715 0-126.404-56.722-126.404-126.442V126.477C38.346 56.755 95.04 0 164.75 0h619.275c69.715 0 126.549 56.755 126.549 126.477v503.925c0 18.216-14.814 32.997-33.07 32.997-18.183 0-32.925-14.78-32.925-32.997V126.477c0-33.355-27.2-60.488-60.554-60.488H164.75c-33.353 0-60.41 27.133-60.41 60.488v733.004c0 33.353 27.057 60.441 60.41 60.441h441.477c18.183 0 32.925 14.787 32.925 33.004 0 18.211-14.742 32.997-32.925 32.997zm0 0" />
-          <path d="M657.62 322.056H291.154c-18.183 0-32.924-14.786-32.924-33.003 0-18.21 14.74-32.998 32.924-32.998H657.62c18.256 0 33.07 14.787 33.07 32.998 0 18.217-14.814 33.003-33.07 33.003zm0 0M657.62 504.749H291.154c-18.183 0-32.924-14.78-32.924-32.993 0-18.222 14.74-32.997 32.924-32.997H657.62c18.256 0 33.07 14.775 33.07 32.997 0 18.218-14.814 32.993-33.07 32.993zm0 0M445.611 687.486H291.154c-18.183 0-32.924-14.78-32.924-33.004 0-18.21 14.74-32.991 32.924-32.991h154.457c18.184 0 32.998 14.78 32.998 32.991 0 18.224-14.814 33.004-32.998 33.004zm0 0M866.482 1024c-8.447 0-16.896-3.225-23.34-9.662L577.595 748.786c-7.156-7.123-10.592-17.07-9.446-27.056l8.733-77.728c1.788-15.321 13.885-27.378 29.2-29.06l77.45-8.52c10.443-.965 19.9 2.433 26.905 9.449l265.558 265.551c12.875 12.877 12.875 33.784 0 46.666l-86.184 86.25c-6.438 6.437-14.887 9.662-23.33 9.662zm-231.05-310.646l231.05 231.018 39.575-39.62-231.043-231.05-35.505 3.938-4.076 35.714zm0 0" />
+           <path d="M606.227 985.923H164.75c-69.715 0-126.404-56.722-126.404-126.442V126.477C38.346 56.755 95.04 0 164.75 0h619.275c69.715 0 126.549 56.755 126.549 126.477v503.925c0 18.216-14.814 32.997-33.07 32.997-18.183 0-32.925-14.78-32.925-32.997V126.477c0-33.355-27.2-60.488-60.554-60.488H164.75c-33.353 0-60.41 27.133-60.41 60.488v733.004c0 33.353 27.057 60.441 60.41 60.441h441.477c18.183 0 32.925 14.787 32.925 33.004 0 18.211-14.742 32.997-32.925 32.997zm0 0" />
+           <path d="M657.62 322.056H291.154c-18.183 0-32.924-14.786-32.924-33.003 0-18.21 14.74-32.998 32.924-32.998H657.62c18.256 0 33.07 14.787 33.07 32.998 0 18.217-14.814 33.003-33.07 33.003zm0 0M657.62 504.749H291.154c-18.183 0-32.924-14.78-32.924-32.993 0-18.222 14.74-32.997 32.924-32.997H657.62c18.256 0 33.07 14.775 33.07 32.997 0 18.218-14.814 32.993-33.07 32.993zm0 0M445.611 687.486H291.154c-18.183 0-32.924-14.78-32.924-33.004 0-18.21 14.74-32.991 32.924-32.991h154.457c18.184 0 32.998 14.78 32.998 32.991 0 18.224-14.814 33.004-32.998 33.004zm0 0M866.482 1024c-8.447 0-16.896-3.225-23.34-9.662L577.595 748.786c-7.156-7.123-10.592-17.07-9.446-27.056l8.733-77.728c1.788-15.321 13.885-27.378 29.2-29.06l77.45-8.52c10.443-.965 19.9 2.433 26.905 9.449l265.558 265.551c12.875 12.877 12.875 33.784 0 46.666l-86.184 86.25c-6.438 6.437-14.887 9.662-23.33 9.662zm-231.05-310.646l231.05 231.018 39.575-39.62-231.043-231.05-35.505 3.938-4.076 35.714zm0 0" />
         </svg>
         <span>累计撰写 <strong><?php echo number_format($count->publishedPostsNum); ?></strong> 篇文章</span>
       </li>
+      <?php endif; ?>
+      <?php if ($count && property_exists($count, 'publishedCommentsNum')): ?>
       <li class="item">
         <svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
           <path d="M921.6 153.6H102.4A102.4 102.4 0 0 0 0 256v512a102.4 102.4 0 0 0 102.4 102.4h819.2A102.4 102.4 0 0 0 1024 768V256a102.4 102.4 0 0 0-102.4-102.4zM687.616 473.088L972.8 258.304V791.04zM960 204.8L527.104 527.36 73.216 204.8zM371.2 483.584l-320 287.232V256zM73.984 819.2l339.2-307.2 83.456 59.392a51.2 51.2 0 0 0 60.416 0l89.6-67.328L931.072 819.2z" />
         </svg>
         <span>累计收到 <strong><?php echo number_format($count->publishedCommentsNum); ?></strong> 条评论</span>
       </li>
+      <?php endif; ?>
     </ul>
     <ul class="joe_header__slideout-menu panel-box">
       <li>
@@ -328,80 +366,70 @@
           <span>首页</span>
         </a>
       </li>
-      <!-- 栏目 -->
+      <?php // Re-fetch or reuse category data if needed, ensure $category is available
+            $this->widget('Widget_Metas_Category_List')->to($slideCategory);
+            if ($slideCategory && $slideCategory->have()):
+      ?>
       <li>
         <a class="link panel" href="#" rel="nofollow">
           <span>栏目</span>
           <svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="13" height="13">
-            <path d="M624.865 512.247L332.71 220.088c-12.28-12.27-12.28-32.186 0-44.457 12.27-12.28 32.186-12.28 44.457 0l314.388 314.388c12.28 12.27 12.28 32.186 0 44.457L377.167 848.863c-6.136 6.14-14.183 9.211-22.228 9.211s-16.092-3.071-22.228-9.211c-12.28-12.27-12.28-32.186 0-44.457l292.155-292.16z" />
+             <path d="M624.865 512.247L332.71 220.088c-12.28-12.27-12.28-32.186 0-44.457 12.27-12.28 32.186-12.28 44.457 0l314.388 314.388c12.28 12.27 12.28 32.186 0 44.457L377.167 848.863c-6.136 6.14-14.183 9.211-22.228 9.211s-16.092-3.071-22.228-9.211c-12.28-12.27-12.28-32.186 0-44.457l292.155-292.16z" />
           </svg>
         </a>
         <ul class="slides panel-body panel-box">
-          <?php while ($category->next()) : ?>
-            <?php if ($category->levels === 0) : ?>
-              <?php $children = $category->getAllChildren($category->mid); ?>
-              <?php if (empty($children)) : ?>
-                <li>
-                  <a class="link <?php echo $this->is('category', $category->slug) ? 'current' : '' ?>" href="<?php echo htmlspecialchars($category->permalink() ?: ''); ?>" title="<?php echo htmlspecialchars($category->name() ?: ''); ?>"><?php echo htmlspecialchars($category->name() ?: ''); ?></a>
-                </li>
-              <?php else : ?>
-                <li>
-                  <div class="link panel <?php echo $this->is('category', $category->slug) ? 'current' : '' ?>">
-                    <a href="<?php echo htmlspecialchars($category->permalink() ?: ''); ?>" title="<?php echo htmlspecialchars($category->name() ?: ''); ?>"><?php echo htmlspecialchars($category->name() ?: ''); ?></a>
-                    <svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="13" height="13">
-                      <path d="M624.865 512.247L332.71 220.088c-12.28-12.27-12.28-32.186 0-44.457 12.27-12.28 32.186-12.28 44.457 0l314.388 314.388c12.28 12.27 12.28 32.186 0 44.457L377.167 848.863c-6.136 6.14-14.183 9.211-22.228 9.211s-16.092-3.071-22.228-9.211c-12.28-12.27-12.28-32.186 0-44.457l292.155-292.16z" />
-                    </svg>
-                  </div>
-                  <ul class="slides panel-body">
-                    <?php foreach ($children as $mid) : ?>
-                      <?php $child = $category->getCategory($mid); ?>
-                      <li>
-                        <a class="link <?php echo $this->is('category', $child['slug']) ? 'current' : '' ?>" href="<?php echo htmlspecialchars($child['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($child['name'] ?: ''); ?>"><?php echo htmlspecialchars($child['name'] ?: ''); ?></a>
-                      </li>
-                    <?php endforeach; ?>
-                  </ul>
-                </li>
-              <?php endif; ?>
-            <?php endif; ?>
+          <?php while ($slideCategory->next()) : ?>
+             <?php if ($slideCategory->levels === 0) : ?>
+                <?php $children = $slideCategory->getAllChildren($slideCategory->mid); ?>
+                <?php if (empty($children)) : ?>
+                  <li>
+                     <a class="link <?php echo $this->is('category', $slideCategory->slug) ? 'current' : '' ?>" href="<?php echo htmlspecialchars($slideCategory->permalink() ?: ''); ?>" title="<?php echo htmlspecialchars($slideCategory->name() ?: ''); ?>"><?php echo htmlspecialchars($slideCategory->name() ?: ''); ?></a>
+                  </li>
+                <?php else : ?>
+                  <li>
+                     <div class="link panel <?php echo $this->is('category', $slideCategory->slug) ? 'current' : '' ?>">
+                        <a href="<?php echo htmlspecialchars($slideCategory->permalink() ?: ''); ?>" title="<?php echo htmlspecialchars($slideCategory->name() ?: ''); ?>"><?php echo htmlspecialchars($slideCategory->name() ?: ''); ?></a>
+                        <svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="13" height="13">
+                           <path d="M624.865 512.247L332.71 220.088c-12.28-12.27-12.28-32.186 0-44.457 12.27-12.28 32.186-12.28 44.457 0l314.388 314.388c12.28 12.27 12.28 32.186 0 44.457L377.167 848.863c-6.136 6.14-14.183 9.211-22.228 9.211s-16.092-3.071-22.228-9.211c-12.28-12.27-12.28-32.186 0-44.457l292.155-292.16z" />
+                        </svg>
+                     </div>
+                     <ul class="slides panel-body">
+                        <?php foreach ($children as $mid) : ?>
+                           <?php $child = $slideCategory->getCategory($mid); ?>
+                            <?php if (is_array($child) && isset($child['slug']) && isset($child['permalink']) && isset($child['name'])): // Check child structure ?>
+                           <li>
+                              <a class="link <?php echo $this->is('category', $child['slug']) ? 'current' : '' ?>" href="<?php echo htmlspecialchars($child['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($child['name'] ?: ''); ?>"><?php echo htmlspecialchars($child['name'] ?: ''); ?></a>
+                           </li>
+                           <?php endif; ?>
+                        <?php endforeach; ?>
+                     </ul>
+                  </li>
+                <?php endif; ?>
+             <?php endif; ?>
           <?php endwhile; ?>
         </ul>
       </li>
-      <!-- 页面 -->
+      <?php endif; // End check for slideCategory ?>
+      <?php // Re-fetch or reuse page data if needed, ensure $pages is available
+            $this->widget('Widget_Contents_Page_List')->to($slidePages);
+            if ($slidePages && $slidePages->have()):
+      ?>
       <li>
         <a class="link panel" href="#" rel="nofollow">
           <span>页面</span>
           <svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="13" height="13">
-            <path d="M624.865 512.247L332.71 220.088c-12.28-12.27-12.28-32.186 0-44.457 12.27-12.28 32.186-12.28 44.457 0l314.388 314.388c12.28 12.27 12.28 32.186 0 44.457L377.167 848.863c-6.136 6.14-14.183 9.211-22.228 9.211s-16.092-3.071-22.228-9.211c-12.28-12.27-12.28-32.186 0-44.457l292.155-292.16z" />
+             <path d="M624.865 512.247L332.71 220.088c-12.28-12.27-12.28-32.186 0-44.457 12.27-12.28 32.186-12.28 44.457 0l314.388 314.388c12.28 12.27 12.28 32.186 0 44.457L377.167 848.863c-6.136 6.14-14.183 9.211-22.228 9.211s-16.092-3.071-22.228-9.211c-12.28-12.27-12.28-32.186 0-44.457l292.155-292.16z" />
           </svg>
         </a>
         <ul class="slides panel-body">
-          <?php foreach ($pages->stack as $item) : ?>
-            <li>
-              <a class="link <?php echo $this->is('page', $item['slug']) ? 'current' : '' ?>" href="<?php echo htmlspecialchars($item['permalink'] ?: ''); ?>" title="<?php echo htmlspecialchars($item['title'] ?: ''); ?>"><?php echo htmlspecialchars($item['title'] ?: ''); ?></a>
-            </li>
-          <?php endforeach; ?>
+          <?php while ($slidePages->next()) : ?>
+             <li>
+                <a class="link <?php echo $this->is('page', $slidePages->slug) ? 'current' : '' ?>" href="<?php echo htmlspecialchars($slidePages->permalink() ?: ''); ?>" title="<?php echo htmlspecialchars($slidePages->title() ?: ''); ?>"><?php echo htmlspecialchars($slidePages->title() ?: ''); ?></a>
+             </li>
+          <?php endwhile; ?>
         </ul>
       </li>
-      <!-- 推荐 -->
-      <?php if (sizeof($custom) > 0) : ?>
-        <li>
-          <a class="link panel" href="#" rel="nofollow">
-            <span>推荐</span>
-            <svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="13" height="13">
-              <path d="M624.865 512.247L332.71 220.088c-12.28-12.27-12.28-32.186 0-44.457 12.27-12.28 32.186-12.28 44.457 0l314.388 314.388c12.28 12.27 12.28 32.186 0 44.457L377.167 848.863c-6.136 6.14-14.183 9.211-22.228 9.211s-16.092-3.071-22.228-9.211c-12.28-12.27-12.28-32.186 0-44.457l292.155-292.16z" />
-            </svg>
-          </a>
-          <ul class="slides panel-body">
-            <?php foreach ($custom as $item) : ?>
-              <li>
-                <a class="link" href="<?php echo htmlspecialchars($item['url'] ?: ''); ?>" target="_blank" rel="noopener noreferrer nofollow"><?php echo htmlspecialchars($item['title'] ?: ''); ?></a>
-              </li>
-            <?php endforeach; ?>
-          </ul>
-        </li>
-      <?php endif; ?>
-    </ul>
+       <?php endif; // End check for slidePages ?>
+      </ul>
   </div>
-
-  <div class="joe_header__mask"></div>
 </header>

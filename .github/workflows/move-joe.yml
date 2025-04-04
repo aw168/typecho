@@ -19,7 +19,7 @@ jobs:
       - name: Checkout Joe repository
         uses: actions/checkout@v4
         with:
-          repository: aw168/awbk/tree/main/usr/themes/Joe
+          repository: aw168/awbk/usr/themes/Joe
           path: temp-Joe
           token: ${{ secrets.PAT }}
 
